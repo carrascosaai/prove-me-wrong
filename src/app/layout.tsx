@@ -1,0 +1,54 @@
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import Script from "next/script";
+import "./globals.css";
+import { Nav } from "@/components/Nav";
+import { Footer } from "@/components/Footer";
+import { ADSENSE_CLIENT, SITE_URL } from "@/lib/env";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "PROVE ME WRONG.",
+    template: "%s — PROVE ME WRONG",
+  },
+  description: "Say it now. Prove it later. Make a public prediction and let the future settle it.",
+  openGraph: {
+    title: "PROVE ME WRONG.",
+    description: "Say it now. Prove it later.",
+    url: SITE_URL,
+    siteName: "PROVE ME WRONG",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PROVE ME WRONG.",
+    description: "Say it now. Prove it later.",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" className={inter.variable}>
+      <body className="min-h-screen flex flex-col">
+        <Nav />
+        <main className="flex-1">{children}</main>
+        <Footer />
+        {ADSENSE_CLIENT ? (
+          <Script
+            async
+            strategy="afterInteractive"
+            crossOrigin="anonymous"
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          />
+        ) : null}
+      </body>
+    </html>
+  );
+}
