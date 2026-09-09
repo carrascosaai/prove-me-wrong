@@ -13,7 +13,15 @@ import { SITE_URL } from "./env";
  * reads headers and would opt a static page into dynamic rendering.
  */
 export async function siteUrl(): Promise<string> {
-  if (process.env.NEXT_PUBLIC_SITE_URL) return SITE_URL;
+  // SITE_URL already resolves explicit env + Vercel URLs. Only fall back to
+  // the request host when none of those are available (bare local dev).
+  if (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+    process.env.VERCEL_URL
+  ) {
+    return SITE_URL;
+  }
   try {
     const h = await headers();
     const host = h.get("x-forwarded-host") ?? h.get("host");
