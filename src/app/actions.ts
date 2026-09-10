@@ -6,20 +6,28 @@ import { headers } from "next/headers";
 import {
   addComment,
   createPrediction,
+  ipHash,
+  rateCheck,
   resolvePrediction,
   vote,
   voterHash,
 } from "@/lib/db";
 import { isCategory } from "@/lib/categories";
+import { containsBlockedTerm, isBot } from "@/lib/moderation";
+
+async function clientIp(): Promise<string> {
+  const h = await headers();
+  return (
+    h.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    h.get("x-real-ip") ||
+    "0.0.0.0"
+  );
+}
 
 async function clientHash(): Promise<string> {
   const h = await headers();
-  const ip =
-    h.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    h.get("x-real-ip") ||
-    "0.0.0.0";
   const ua = h.get("user-agent") || "unknown";
-  return voterHash(ip, ua);
+  return voterHash(await clientIp(), ua);
 }
 
 export type CreateState = { error?: string };
@@ -28,6 +36,11 @@ export async function createPredictionAction(
   _prev: CreateState,
   formData: FormData,
 ): Promise<CreateState> {
+  // Honeypot — a filled hidden field means a bot. Pretend it worked.
+  if (isBot(formData.get("website"))) {
+    return { error: "Something went wrong. Try again." };
+  }
+
   const prediction = String(formData.get("prediction") ?? "").trim();
   const category = String(formData.get("category") ?? "").trim();
   const resolutionDate = String(formData.get("resolution_date") ?? "").trim();
@@ -60,6 +73,14 @@ export async function createPredictionAction(
   if (evidence && !/^https?:\/\/.+/i.test(evidence)) {
     return { error: "Evidence must be a valid http(s) URL." };
   }
+  if (containsBlockedTerm(prediction, username)) {
+    return { error: "That contains language we don't allow. Reword it." };
+  }
+
+  const bucket = `create:${ipHash(await clientIp())}`;
+  if (!(await rateCheck(bucket, 6, 3600))) {
+    return { error: "You're posting too fast. Try again in a bit." };
+  }
 
   const created = await createPrediction({
     prediction,
@@ -83,6 +104,8 @@ export async function addCommentAction(
   _prev: CommentState,
   formData: FormData,
 ): Promise<CommentState> {
+  if (isBot(formData.get("website"))) return { ok: true };
+
   const slug = String(formData.get("slug") ?? "");
   const username = String(formData.get("username") ?? "").trim() || "anon";
   const body = String(formData.get("body") ?? "").trim();
@@ -92,6 +115,14 @@ export async function addCommentAction(
   if (body.length > 1000) return { error: "Comment too long." };
   if (url && !/^https?:\/\/.+/i.test(url)) {
     return { error: "Evidence link must be a valid http(s) URL." };
+  }
+  if (containsBlockedTerm(body, username)) {
+    return { error: "That contains language we don't allow." };
+  }
+
+  const bucket = `comment:${ipHash(await clientIp())}`;
+  if (!(await rateCheck(bucket, 20, 3600))) {
+    return { error: "Slow down — too many comments. Try again later." };
   }
 
   const c = await addComment(slug, {
@@ -117,6 +148,10 @@ export async function voteAction(
   const slug = String(formData.get("slug") ?? "");
   const choice = String(formData.get("choice") ?? "");
   if (choice !== "agree" && choice !== "doubt") return prev;
+
+  const bucket = `vote:${ipHash(await clientIp())}`;
+  if (!(await rateCheck(bucket, 120, 3600))) return prev;
+
   const res = await vote(slug, choice, await clientHash());
   revalidatePath(`/p/${slug}`);
   return res ? { ...res, voted: choice } : prev;

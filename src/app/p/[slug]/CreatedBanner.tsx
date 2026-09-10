@@ -2,19 +2,25 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { rememberMine } from "@/lib/mine";
 
 export function CreatedBanner({
   slug,
   token,
   shareUrl,
+  prediction,
 }: {
   slug: string;
   token?: string;
   shareUrl: string;
+  prediction: string;
 }) {
   const [copiedManage, setCopiedManage] = useState(false);
   const [origin, setOrigin] = useState("");
   useEffect(() => setOrigin(window.location.origin), []);
+  useEffect(() => {
+    if (token) rememberMine({ slug, prediction, token, ts: Date.now() });
+  }, [slug, token, prediction]);
   const manageUrl = token
     ? `${origin}/p/${slug}/manage?token=${encodeURIComponent(token)}`
     : null;
@@ -29,12 +35,16 @@ export function CreatedBanner({
 
       {manageUrl ? (
         <div className="mt-4">
-          <div className="text-xs uppercase tracking-wide text-muted">
-            Your private manage link — save it now
+          <div className="mono text-[11px] uppercase tracking-wide text-faint">
+            Your private manage link
           </div>
           <p className="text-xs text-muted mb-2">
-            This is the only way to mark the verdict later. We don&apos;t email it
-            to you.
+            Saved in this browser (see{" "}
+            <Link href="/mine" className="text-accent hover:underline">
+              /mine
+            </Link>
+            ). It&apos;s the only way to mark the verdict later, and we don&apos;t
+            email it — keep a copy.
           </p>
           <div className="flex gap-2">
             <input

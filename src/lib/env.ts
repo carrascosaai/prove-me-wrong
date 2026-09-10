@@ -34,3 +34,6 @@ export const HAS_DB_WRITE = Boolean(
 
 export const ADSENSE_CLIENT = get("NEXT_PUBLIC_ADSENSE_CLIENT");
 export const ADMIN_SECRET = get("ADMIN_SECRET");
+
+/** Public inbox for content-removal / abuse reports. */
+export const CONTACT_EMAIL = get("NEXT_PUBLIC_CONTACT_EMAIL");

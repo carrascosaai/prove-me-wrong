@@ -63,7 +63,12 @@ export default async function PredictionPage({
       <ViewPing slug={p.slug} />
 
       {created === "1" ? (
-        <CreatedBanner slug={p.slug} token={token} shareUrl={shareUrl} />
+        <CreatedBanner
+          slug={p.slug}
+          token={token}
+          shareUrl={shareUrl}
+          prediction={p.prediction}
+        />
       ) : null}
 
       <div className="flex items-center gap-2 flex-wrap">

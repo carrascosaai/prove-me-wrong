@@ -50,6 +50,14 @@ export function CommentSection({
 
       <form ref={formRef} action={action} className="mt-4 space-y-3">
         <input type="hidden" name="slug" value={slug} />
+        <input
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          className="absolute left-[-9999px] h-0 w-0 opacity-0"
+        />
         <div className="grid sm:grid-cols-[1fr_2fr] gap-3">
           <input
             name="username"

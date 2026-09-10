@@ -21,8 +21,38 @@ export function voterHash(ip: string, ua: string): string {
   return createHash("sha256").update(`${ip}|${ua}`).digest("hex").slice(0, 32);
 }
 
+export function ipHash(ip: string): string {
+  return createHash("sha256").update(`pmw|${ip}`).digest("hex").slice(0, 24);
+}
+
 function tokenHash(token: string): string {
   return createHash("sha256").update(token).digest("hex");
+}
+
+/**
+ * Sliding-window rate limit. Returns true when the action is allowed.
+ * No-ops to `true` when there is no DB (local demo mode).
+ */
+export async function rateCheck(
+  bucket: string,
+  limit: number,
+  windowSeconds: number,
+): Promise<boolean> {
+  if (!HAS_DB_WRITE) return true;
+  try {
+    const { data, error } = await supabaseAdmin().rpc("pmw_rate_check", {
+      p_bucket: bucket,
+      p_limit: limit,
+      p_window_seconds: windowSeconds,
+    });
+    if (error) {
+      console.error("rateCheck:", error.message);
+      return true; // fail open — never lock users out on an infra hiccup
+    }
+    return data !== false;
+  } catch {
+    return true;
+  }
 }
 
 function strip(p: PredictionWithToken): Prediction {
@@ -57,7 +87,10 @@ export async function listPredictions(
   const { sort = "new", category = null, status = "all", limit = 30 } = opts;
 
   if (HAS_DB) {
-    let q = supabaseRead().from("pmw_predictions").select(PUBLIC_COLUMNS);
+    let q = supabaseRead()
+      .from("pmw_predictions")
+      .select(PUBLIC_COLUMNS)
+      .eq("is_hidden", false);
     if (category) q = q.eq("category", category);
     if (status !== "all") q = q.eq("status", status);
     if (sort === "soon") {
@@ -111,6 +144,7 @@ export async function getPredictionBySlug(
       .from("pmw_predictions")
       .select(PUBLIC_COLUMNS)
       .eq("slug", slug)
+      .eq("is_hidden", false)
       .maybeSingle();
     if (error) {
       console.error("getPredictionBySlug:", error.message);
@@ -129,6 +163,7 @@ export async function listCommentsByPredictionId(
       .from("pmw_comments")
       .select("*")
       .eq("prediction_id", predictionId)
+      .eq("is_hidden", false)
       .order("created_at", { ascending: false })
       .limit(200);
     if (error) {
@@ -482,4 +517,89 @@ export async function getStats(): Promise<Stats | null> {
     votes,
     comments,
   };
+}
+
+// ─────────────────────────────────────────────────────────────
+// Moderation (admin, guarded by ADMIN_SECRET at the route level)
+// ─────────────────────────────────────────────────────────────
+
+export interface AdminPrediction extends Prediction {
+  is_hidden: boolean;
+}
+export interface AdminComment extends Comment {
+  is_hidden: boolean;
+  prediction_slug: string | null;
+}
+
+export async function adminRecentPredictions(
+  limit = 60,
+): Promise<AdminPrediction[]> {
+  if (!HAS_DB_WRITE) return [];
+  const { data, error } = await supabaseAdmin()
+    .from("pmw_predictions")
+    .select(`${PUBLIC_COLUMNS},is_hidden`)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) {
+    console.error("adminRecentPredictions:", error.message);
+    return [];
+  }
+  return (data ?? []) as AdminPrediction[];
+}
+
+export async function adminRecentComments(
+  limit = 60,
+): Promise<AdminComment[]> {
+  if (!HAS_DB_WRITE) return [];
+  const { data, error } = await supabaseAdmin()
+    .from("pmw_comments")
+    .select("*, pmw_predictions(slug)")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) {
+    console.error("adminRecentComments:", error.message);
+    return [];
+  }
+  return (data ?? []).map((row) => {
+    const r = row as Record<string, unknown> & {
+      pmw_predictions?: { slug: string } | null;
+    };
+    const { pmw_predictions, ...rest } = r;
+    return {
+      ...(rest as unknown as AdminComment),
+      prediction_slug: pmw_predictions?.slug ?? null,
+    };
+  });
+}
+
+export async function setPredictionHidden(
+  id: string,
+  hidden: boolean,
+): Promise<void> {
+  if (!HAS_DB_WRITE) return;
+  await supabaseAdmin()
+    .from("pmw_predictions")
+    .update({ is_hidden: hidden })
+    .eq("id", id);
+}
+
+export async function setCommentHidden(
+  id: string,
+  hidden: boolean,
+): Promise<void> {
+  if (!HAS_DB_WRITE) return;
+  await supabaseAdmin()
+    .from("pmw_comments")
+    .update({ is_hidden: hidden })
+    .eq("id", id);
+}
+
+export async function deletePredictionById(id: string): Promise<void> {
+  if (!HAS_DB_WRITE) return;
+  await supabaseAdmin().from("pmw_predictions").delete().eq("id", id);
+}
+
+export async function deleteCommentById(id: string): Promise<void> {
+  if (!HAS_DB_WRITE) return;
+  await supabaseAdmin().from("pmw_comments").delete().eq("id", id);
 }
