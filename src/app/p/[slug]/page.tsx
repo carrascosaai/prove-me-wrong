@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPredictionBySlug, listCommentsByPredictionId } from "@/lib/db";
 import { siteUrl } from "@/lib/site";
+import { PAYMENTS_ENABLED } from "@/lib/env";
 import { formatDate } from "@/lib/format";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Countdown } from "@/components/Countdown";
@@ -182,7 +183,7 @@ export default async function PredictionPage({
         </div>
       </div>
 
-      {!p.is_pro ? (
+      {PAYMENTS_ENABLED && !p.is_pro ? (
         <div className="mt-8 rounded-xl border border-pro/30 bg-pro/[0.06] p-5">
           <div className="font-semibold text-pro">
             Make it a PRO prediction — €2.99
