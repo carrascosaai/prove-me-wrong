@@ -57,7 +57,7 @@ export async function listPredictions(
   const { sort = "new", category = null, status = "all", limit = 30 } = opts;
 
   if (HAS_DB) {
-    let q = supabaseRead().from("predictions").select(PUBLIC_COLUMNS);
+    let q = supabaseRead().from("pmw_predictions").select(PUBLIC_COLUMNS);
     if (category) q = q.eq("category", category);
     if (status !== "all") q = q.eq("status", status);
     if (sort === "soon") {
@@ -71,7 +71,10 @@ export async function listPredictions(
       q = q.order("created_at", { ascending: false });
     }
     const { data, error } = await q.limit(limit);
-    if (error) throw error;
+    if (error) {
+      console.error("listPredictions:", error.message);
+      return [];
+    }
     return (data ?? []) as Prediction[];
   }
 
@@ -105,11 +108,14 @@ export async function getPredictionBySlug(
 ): Promise<Prediction | null> {
   if (HAS_DB) {
     const { data, error } = await supabaseRead()
-      .from("predictions")
+      .from("pmw_predictions")
       .select(PUBLIC_COLUMNS)
       .eq("slug", slug)
       .maybeSingle();
-    if (error) throw error;
+    if (error) {
+      console.error("getPredictionBySlug:", error.message);
+      return null;
+    }
     return (data as Prediction) ?? null;
   }
   return demo().predictions.map(strip).find((p) => p.slug === slug) ?? null;
@@ -120,12 +126,15 @@ export async function listCommentsByPredictionId(
 ): Promise<Comment[]> {
   if (HAS_DB) {
     const { data, error } = await supabaseRead()
-      .from("comments")
+      .from("pmw_comments")
       .select("*")
       .eq("prediction_id", predictionId)
       .order("created_at", { ascending: false })
       .limit(200);
-    if (error) throw error;
+    if (error) {
+      console.error("listComments:", error.message);
+      return [];
+    }
     return (data ?? []) as Comment[];
   }
   return demo()
@@ -228,7 +237,7 @@ export async function createPrediction(
 
   if (HAS_DB_WRITE) {
     const { data, error } = await supabaseAdmin()
-      .from("predictions")
+      .from("pmw_predictions")
       .insert({ ...row, manage_token_hash: tokenHash(manage_token) })
       .select(PUBLIC_COLUMNS)
       .single();
@@ -263,7 +272,7 @@ export async function resolvePrediction(
 ): Promise<Prediction | null> {
   if (HAS_DB_WRITE) {
     const { data, error } = await supabaseAdmin()
-      .from("predictions")
+      .from("pmw_predictions")
       .update({ status, resolved_at: new Date().toISOString() })
       .eq("slug", slug)
       .eq("manage_token_hash", tokenHash(token))
@@ -287,7 +296,7 @@ export async function verifyManageToken(
 ): Promise<Prediction | null> {
   if (HAS_DB_WRITE) {
     const { data, error } = await supabaseAdmin()
-      .from("predictions")
+      .from("pmw_predictions")
       .select(PUBLIC_COLUMNS)
       .eq("slug", slug)
       .eq("manage_token_hash", tokenHash(token))
@@ -303,7 +312,7 @@ export async function verifyManageToken(
 
 export async function incrementViews(slug: string): Promise<void> {
   if (HAS_DB_WRITE) {
-    await supabaseAdmin().rpc("increment_views", { p_slug: slug });
+    await supabaseAdmin().rpc("pmw_increment_views", { p_slug: slug });
     return;
   }
   const p = demo().predictions.find((x) => x.slug === slug);
@@ -326,7 +335,7 @@ export async function addComment(
 
   if (HAS_DB_WRITE) {
     const { data, error } = await supabaseAdmin()
-      .from("comments")
+      .from("pmw_comments")
       .insert(row)
       .select("*")
       .single();
@@ -353,14 +362,14 @@ export async function vote(
   if (HAS_DB_WRITE) {
     const admin = supabaseAdmin();
     const { error: insErr } = await admin
-      .from("votes")
+      .from("pmw_votes")
       .insert({ prediction_id: p.id, vote: choice, voter_hash: hash });
     if (insErr && insErr.code !== "23505") throw insErr; // ignore duplicate
     if (insErr) {
       return { agree: p.agree_count, doubt: p.doubt_count }; // already voted
     }
     const column = choice === "agree" ? "agree_count" : "doubt_count";
-    await admin.rpc("bump_vote_count", { p_slug: slug, p_column: column });
+    await admin.rpc("pmw_bump_vote_count", { p_slug: slug, p_column: column });
     const fresh = await getPredictionBySlug(slug);
     return fresh
       ? { agree: fresh.agree_count, doubt: fresh.doubt_count }
@@ -382,7 +391,7 @@ export async function vote(
 export async function markPredictionPro(slug: string): Promise<void> {
   if (HAS_DB_WRITE) {
     await supabaseAdmin()
-      .from("predictions")
+      .from("pmw_predictions")
       .update({ is_pro: true })
       .eq("slug", slug);
     return;

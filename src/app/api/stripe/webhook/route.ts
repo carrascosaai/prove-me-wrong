@@ -40,7 +40,7 @@ export async function POST(req: Request) {
 
       if (HAS_DB_WRITE) {
         await supabaseAdmin()
-          .from("orders")
+          .from("pmw_orders")
           .upsert(
             {
               stripe_session_id: session.id,
