@@ -40,6 +40,16 @@ free product; revisit only if it gets traction.
   nothing sets them and nothing renders them — no purchase path.
 - Keep pages server components; push interactivity into small `"use client"`
   leaves (`Countdown`, `VoteWidget`, `ShareButtons`, form components).
+- **Abuse control** in `src/app/actions.ts`: honeypot (`isBot`) first, then
+  `containsBlockedTerm` (short slur list in `src/lib/moderation.ts`), then
+  `rateCheck` (per-IP, `pmw_rate_check` RPC, fail-open).
+- **Moderation**: `is_hidden` on predictions/comments; every public read filters
+  it out. `/admin?key=ADMIN_SECRET` lists recent rows with hide/delete.
+- **`/mine`**: localStorage only (`src/lib/mine.ts`), written by `CreatedBanner`.
+- **`/stats`**: aggregated pageviews (`pmw_stats` + `pmw_track`), fed by
+  `<Track/>` in the layout. Public unless `ADMIN_SECRET` is set.
+- SQL lives in `supabase/`: `schema.sql`, then `analytics.sql`, then
+  `hardening.sql`. All idempotent, all `pmw_`-prefixed.
 - `revalidate` is set per route; don't make list/detail pages fully dynamic
   without reason (cost target: 100k visitors on free tiers).
 

@@ -27,13 +27,18 @@ connect Supabase before any real launch.
 ## Connecting Supabase (persistent data)
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. SQL editor → run [`supabase/schema.sql`](supabase/schema.sql). Every object
-   is prefixed `pmw_`, so it can safely share a project with other apps.
+2. SQL editor → run, in order: [`supabase/schema.sql`](supabase/schema.sql),
+   [`supabase/analytics.sql`](supabase/analytics.sql),
+   [`supabase/hardening.sql`](supabase/hardening.sql). All idempotent, all
+   prefixed `pmw_`, so they can safely share a project with other apps.
 3. Project settings → API → set these (in `.env.local` locally, and in Vercel):
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY` (server only — never exposed to the browser)
 4. Restart `npm run dev`.
+
+Optional env: `ADMIN_SECRET` (locks `/admin` moderation and `/stats`),
+`NEXT_PUBLIC_CONTACT_EMAIL` (footer "Report content" link).
 
 Reads use the anon key (RLS: public `select` only). All writes go through
 server code with the service-role key. The secret "manage token" that lets a
@@ -79,7 +84,15 @@ NEXT_PUBLIC_ADSENSE_SLOT_PREDICTION=1234567893
 | `/p/<slug>/manage?token=` | Creator-only: mark CORRECT / WRONG (noindex) |
 | `/p/<slug>/opengraph-image` | Auto-generated share card |
 | `/rankings` + `/rankings/<type>` | Most popular / controversial / confident / accurate / wrong |
-| `/api/p/<slug>/view` | View-count ping |
+| `/mine` | Predictions you made (localStorage), with manage links |
+| `/stats` | Aggregated pageviews + referrers (public unless `ADMIN_SECRET` set) |
+| `/admin?key=` | Moderation — hide / delete predictions & comments (`ADMIN_SECRET`) |
+| `/api/p/<slug>/view`, `/api/hit` | View-count + analytics pings |
+
+## Abuse control
+
+Honeypot field + per-IP rate limits (create 6/h, comment 20/h, vote 120/h,
+fail-open) + a short hard-blocked slur list + `is_hidden` moderation. No CAPTCHA.
 
 ## What's intentionally NOT here
 
