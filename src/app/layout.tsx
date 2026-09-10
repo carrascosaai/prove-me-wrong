@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
+import { Track } from "@/components/Track";
 import { ADSENSE_CLIENT, SITE_URL } from "@/lib/env";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -44,6 +45,7 @@ export default function RootLayout({
         <Nav />
         <main className="flex-1">{children}</main>
         <Footer />
+        <Track />
         {ADSENSE_CLIENT ? (
           <Script
             async

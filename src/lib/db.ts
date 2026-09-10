@@ -387,3 +387,99 @@ export async function vote(
   }
   return { agree: target.agree_count, doubt: target.doubt_count };
 }
+
+// ─────────────────────────────────────────────────────────────
+// Analytics (aggregated pageviews)
+// ─────────────────────────────────────────────────────────────
+
+export async function trackHit(path: string, referrer: string): Promise<void> {
+  if (!HAS_DB_WRITE) return;
+  await supabaseAdmin().rpc("pmw_track", {
+    p_path: path,
+    p_referrer: referrer,
+  });
+}
+
+export interface Stats {
+  totalHits: number;
+  hitsToday: number;
+  byDay: { day: string; hits: number }[];
+  topPaths: { path: string; hits: number }[];
+  topReferrers: { referrer: string; hits: number }[];
+  predictionsTotal: number;
+  predictions24h: number;
+  votes: number;
+  comments: number;
+}
+
+export async function getStats(): Promise<Stats | null> {
+  if (!HAS_DB_WRITE) return null;
+  const admin = supabaseAdmin();
+
+  const { data: rows, error } = await admin
+    .from("pmw_stats")
+    .select("day,path,referrer,hits")
+    .gte(
+      "day",
+      new Date(Date.now() - 30 * 86400_000).toISOString().slice(0, 10),
+    )
+    .limit(20000);
+  if (error) {
+    console.error("getStats:", error.message);
+    return null;
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  const byDayMap = new Map<string, number>();
+  const pathMap = new Map<string, number>();
+  const refMap = new Map<string, number>();
+  let totalHits = 0;
+  let hitsToday = 0;
+
+  for (const r of rows ?? []) {
+    const h = Number(r.hits) || 0;
+    totalHits += h;
+    if (r.day === today) hitsToday += h;
+    byDayMap.set(r.day, (byDayMap.get(r.day) ?? 0) + h);
+    pathMap.set(r.path, (pathMap.get(r.path) ?? 0) + h);
+    refMap.set(r.referrer, (refMap.get(r.referrer) ?? 0) + h);
+  }
+
+  const sortDesc = (m: Map<string, number>) =>
+    [...m.entries()].sort((a, b) => b[1] - a[1]);
+
+  const count = async (table: string, since?: string) => {
+    let q = admin.from(table).select("*", { count: "exact", head: true });
+    if (since) q = q.gte("created_at", since);
+    const { count: c } = await q;
+    return c ?? 0;
+  };
+
+  const [predictionsTotal, predictions24h, votes, comments] = await Promise.all([
+    count("pmw_predictions"),
+    count(
+      "pmw_predictions",
+      new Date(Date.now() - 86400_000).toISOString(),
+    ),
+    count("pmw_votes"),
+    count("pmw_comments"),
+  ]);
+
+  return {
+    totalHits,
+    hitsToday,
+    byDay: sortDesc(byDayMap)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([day, hits]) => ({ day, hits })),
+    topPaths: sortDesc(pathMap)
+      .slice(0, 12)
+      .map(([path, hits]) => ({ path, hits })),
+    topReferrers: sortDesc(refMap)
+      .slice(0, 12)
+      .map(([referrer, hits]) => ({ referrer, hits })),
+    predictionsTotal,
+    predictions24h,
+    votes,
+    comments,
+  };
+}
