@@ -22,10 +22,6 @@ export default function PrivacyPage() {
           values.
         </p>
         <p>
-          <strong>Payments.</strong> PRO upgrades are processed by Stripe. Card
-          details go directly to Stripe and are never stored on our servers.
-        </p>
-        <p>
           <strong>Analytics & ads.</strong> If advertising is enabled, third
           parties such as Google may set cookies. You can decline non-essential
           cookies.

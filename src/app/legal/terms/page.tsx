@@ -24,10 +24,6 @@ export default function TermsPage() {
           Predictions and their verdicts are user-generated. We do not verify
           claims and this site is not financial, legal, or investment advice.
         </p>
-        <p>
-          PRO upgrades are one-time digital purchases and are non-refundable once
-          the prediction is upgraded, except where required by law.
-        </p>
         <p>The service is provided “as is”, without warranty.</p>
       </div>
     </div>

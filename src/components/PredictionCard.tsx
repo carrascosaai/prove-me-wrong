@@ -11,27 +11,13 @@ export function PredictionCard({ p }: { p: Prediction }) {
   return (
     <Link
       href={`/p/${p.slug}`}
-      className={`group block rounded-xl border p-4 sm:p-5 transition-colors bg-surface/40 hover:bg-surface ${
-        p.is_sponsored
-          ? "border-pro/40 hover:border-pro/60"
-          : p.is_pro
-            ? "border-pro/25 hover:border-pro/50"
-            : "border-line hover:border-line-strong"
-      }`}
+      className="group block rounded-xl border border-line p-4 sm:p-5 transition-colors bg-surface/40 hover:bg-surface hover:border-line-strong"
     >
       <div className="flex items-center gap-2 flex-wrap mb-3">
         <StatusBadge status={p.status} resolutionDate={p.resolution_date} />
         <span className="mono text-[11px] uppercase tracking-wide text-faint">
           {p.category}
         </span>
-        {p.is_pro && !p.is_sponsored ? (
-          <span className="mono text-[11px] font-semibold text-pro">PRO</span>
-        ) : null}
-        {p.is_sponsored ? (
-          <span className="mono text-[11px] font-semibold text-pro">
-            SPONSORED{p.sponsor_name ? ` · ${p.sponsor_name}` : ""}
-          </span>
-        ) : null}
       </div>
 
       <p className="text-[15px] sm:text-base font-semibold leading-snug tracking-tight text-ink group-hover:text-white">

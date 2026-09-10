@@ -60,19 +60,6 @@ create table if not exists pmw_votes (
   unique (prediction_id, voter_hash)
 );
 
--- ── orders (Stripe) ─────────────────────────────────────────
--- Card data is NEVER stored here. Only references to Stripe objects.
-create table if not exists pmw_orders (
-  id                 uuid primary key default gen_random_uuid(),
-  stripe_session_id  text unique,
-  prediction_slug    text,
-  product            text not null,
-  amount             int not null default 0,
-  currency           text not null default 'eur',
-  status             text not null default 'pending',
-  created_at         timestamptz not null default now()
-);
-
 -- ============================================================
 -- Functions (called by the server with the service-role key)
 -- ============================================================
@@ -106,7 +93,6 @@ $$;
 alter table pmw_predictions enable row level security;
 alter table pmw_comments    enable row level security;
 alter table pmw_votes       enable row level security;
-alter table pmw_orders      enable row level security;
 
 drop policy if exists "pmw public read predictions" on pmw_predictions;
 create policy "pmw public read predictions" on pmw_predictions
@@ -119,5 +105,3 @@ create policy "pmw public read comments" on pmw_comments
 drop policy if exists "pmw public read votes" on pmw_votes;
 create policy "pmw public read votes" on pmw_votes
   for select using (true);
-
--- pmw_orders: no public access at all (service role only)

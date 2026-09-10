@@ -51,10 +51,3 @@ export function relativeFromNow(iso: string, now: number = Date.now()): string {
   else text = fmt(Math.max(1, Math.round(abs / min)), "minute");
   return diff >= 0 ? `in ${text}` : `${text} ago`;
 }
-
-export function priceEuros(cents: number): string {
-  return new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-  }).format(cents / 100);
-}

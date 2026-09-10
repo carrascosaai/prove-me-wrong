@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPredictionBySlug, listCommentsByPredictionId } from "@/lib/db";
 import { siteUrl } from "@/lib/site";
-import { PAYMENTS_ENABLED } from "@/lib/env";
 import { formatDate } from "@/lib/format";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Countdown } from "@/components/Countdown";
@@ -75,23 +74,9 @@ export default async function PredictionPage({
         >
           {p.category}
         </Link>
-        {p.is_pro && !p.is_sponsored ? (
-          <span className="mono text-[11px] font-semibold text-pro ring-1 ring-inset ring-pro/30 rounded-full px-2 py-0.5">
-            PRO
-          </span>
-        ) : null}
-        {p.is_sponsored ? (
-          <span className="mono text-[11px] font-semibold text-pro ring-1 ring-inset ring-pro/30 rounded-full px-2 py-0.5">
-            SPONSORED{p.sponsor_name ? ` · ${p.sponsor_name}` : ""}
-          </span>
-        ) : null}
       </div>
 
-      <h1
-        className={`mt-4 display text-3xl sm:text-4xl leading-tight ${
-          p.is_pro ? "text-pro" : ""
-        }`}
-      >
+      <h1 className="mt-4 display text-3xl sm:text-4xl leading-tight">
         {p.prediction}
       </h1>
 
@@ -182,24 +167,6 @@ export default async function PredictionPage({
           </a>
         </div>
       </div>
-
-      {PAYMENTS_ENABLED && !p.is_pro ? (
-        <div className="mt-8 rounded-xl border border-pro/30 bg-pro/[0.06] p-5">
-          <div className="font-semibold text-pro">
-            Make it a PRO prediction — €2.99
-          </div>
-          <p className="text-sm text-muted mt-1">
-            Highlight it, get a badge, pin it higher in rankings and unlock
-            advanced stats.
-          </p>
-          <Link
-            href={`/pro/${p.slug}`}
-            className="mt-3 inline-block rounded-md bg-pro text-accent-ink px-4 py-2 text-sm font-semibold hover:bg-pro/90 transition-colors"
-          >
-            Upgrade this prediction
-          </Link>
-        </div>
-      ) : null}
 
       <AdSlot
         slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_PREDICTION}

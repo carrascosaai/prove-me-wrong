@@ -32,15 +32,5 @@ export const HAS_DB_WRITE = Boolean(
   SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY,
 );
 
-export const PAYMENTS_ENABLED = get("PAYMENTS_ENABLED") === "true";
-export const STRIPE_SECRET_KEY = get("STRIPE_SECRET_KEY");
-export const STRIPE_WEBHOOK_SECRET = get("STRIPE_WEBHOOK_SECRET");
-export const STRIPE_PRICE_PRO = get("STRIPE_PRICE_PRO");
-
-/** Payments actually reach Stripe only when the switch is on AND a key exists. */
-export const STRIPE_LIVE = PAYMENTS_ENABLED && Boolean(STRIPE_SECRET_KEY);
-
 export const ADSENSE_CLIENT = get("NEXT_PUBLIC_ADSENSE_CLIENT");
 export const ADMIN_SECRET = get("ADMIN_SECRET");
-
-export const PRO_PRICE_CENTS = 299;

@@ -6,8 +6,9 @@ See `README.md` for setup and deploy.
 ## Stack
 
 Next.js 15 App Router · TypeScript (strict) · Tailwind v4 (`@theme` in
-`src/app/globals.css`, no `tailwind.config`) · Supabase (Postgres) · Stripe
-Checkout · Vercel. No auth — a prediction only carries a free-text `username`.
+`src/app/globals.css`, no `tailwind.config`) · Supabase (Postgres) · Vercel.
+No auth — a prediction only carries a free-text `username`. No payments —
+free product; revisit only if it gets traction.
 
 ## Architecture
 
@@ -33,13 +34,10 @@ Checkout · Vercel. No auth — a prediction only carries a free-text `username`
 
 ## Conventions
 
-- Money is integer cents (`PRO_PRICE_CENTS = 299`), formatted with
-  `priceEuros()`.
 - Ads: only `src/components/AdSlot.tsx`, and never on `/create`. Renders nothing
   until `NEXT_PUBLIC_ADSENSE_CLIENT` is set.
-- Payments: gate every Stripe call behind `STRIPE_LIVE` (= `PAYMENTS_ENABLED`
-  true AND a secret key present). When false, `/api/checkout` returns the
-  simulate URL.
+- `is_pro` / `is_sponsored` columns still exist for a future "featured" flag but
+  nothing sets them and nothing renders them — no purchase path.
 - Keep pages server components; push interactivity into small `"use client"`
   leaves (`Countdown`, `VoteWidget`, `ShareButtons`, form components).
 - `revalidate` is set per route; don't make list/detail pages fully dynamic
@@ -53,6 +51,7 @@ npm run lint         # eslint (next/core-web-vitals + next/typescript)
 npm run build
 ```
 
-## Out of scope (MVP)
+## Out of scope
 
-Mobile app, AI, chat, marketplace, complex social graph, user accounts.
+Payments, mobile app, AI, chat, marketplace, complex social graph, user
+accounts.

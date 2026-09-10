@@ -387,15 +387,3 @@ export async function vote(
   }
   return { agree: target.agree_count, doubt: target.doubt_count };
 }
-
-export async function markPredictionPro(slug: string): Promise<void> {
-  if (HAS_DB_WRITE) {
-    await supabaseAdmin()
-      .from("pmw_predictions")
-      .update({ is_pro: true })
-      .eq("slug", slug);
-    return;
-  }
-  const p = demo().predictions.find((x) => x.slug === slug);
-  if (p) p.is_pro = true;
-}
