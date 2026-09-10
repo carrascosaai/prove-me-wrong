@@ -34,7 +34,7 @@ export function CheckoutButton({ slug }: { slug: string }) {
         type="button"
         onClick={go}
         disabled={loading}
-        className="w-full rounded-md bg-ink text-paper px-4 py-3 font-semibold hover:opacity-90 disabled:opacity-50"
+        className="w-full rounded-md bg-pro text-accent-ink px-4 py-3 font-semibold hover:bg-pro/90 disabled:opacity-50 transition-colors"
       >
         {loading ? "Starting checkout…" : "Continue to payment"}
       </button>

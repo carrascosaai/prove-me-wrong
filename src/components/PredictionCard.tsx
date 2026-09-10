@@ -11,49 +11,53 @@ export function PredictionCard({ p }: { p: Prediction }) {
   return (
     <Link
       href={`/p/${p.slug}`}
-      className={`group block rounded-xl border p-4 sm:p-5 transition-colors hover:border-ink ${
+      className={`group block rounded-xl border p-4 sm:p-5 transition-colors bg-surface/40 hover:bg-surface ${
         p.is_sponsored
-          ? "border-pro/50 bg-pro/[0.04]"
+          ? "border-pro/40 hover:border-pro/60"
           : p.is_pro
-            ? "border-pro/40"
-            : "border-line"
+            ? "border-pro/25 hover:border-pro/50"
+            : "border-line hover:border-line-strong"
       }`}
     >
       <div className="flex items-center gap-2 flex-wrap mb-3">
         <StatusBadge status={p.status} resolutionDate={p.resolution_date} />
-        <span className="text-xs text-muted">{p.category}</span>
+        <span className="mono text-[11px] uppercase tracking-wide text-faint">
+          {p.category}
+        </span>
         {p.is_pro && !p.is_sponsored ? (
-          <span className="text-xs font-semibold text-[#8a6a00]">PRO</span>
+          <span className="mono text-[11px] font-semibold text-pro">PRO</span>
         ) : null}
         {p.is_sponsored ? (
-          <span className="text-xs font-semibold text-[#8a6a00]">
+          <span className="mono text-[11px] font-semibold text-pro">
             SPONSORED{p.sponsor_name ? ` · ${p.sponsor_name}` : ""}
           </span>
         ) : null}
       </div>
 
-      <p className="text-lg font-semibold leading-snug tracking-tight group-hover:underline decoration-1 underline-offset-2">
+      <p className="text-[15px] sm:text-base font-semibold leading-snug tracking-tight text-ink group-hover:text-white">
         {p.prediction}
       </p>
 
       <div className="mt-3 flex items-center justify-between text-sm text-muted">
-        <span>
+        <span className="mono text-xs">
           @{p.username} · {formatDateShort(p.created_at)}
         </span>
         {p.status === "active" ? (
-          <Countdown target={p.resolution_date} compact />
+          <span className="text-xs text-accent">
+            <Countdown target={p.resolution_date} compact />
+          </span>
         ) : null}
       </div>
 
       {total > 0 ? (
         <div className="mt-3">
-          <div className="h-1.5 rounded-full bg-black/[0.06] overflow-hidden">
+          <div className="h-1 rounded-full bg-white/[0.08] overflow-hidden">
             <div
-              className="h-full bg-wrong/70"
+              className="h-full bg-wrong/80"
               style={{ width: `${doubtPct}%` }}
             />
           </div>
-          <div className="mt-1 text-[11px] text-muted">
+          <div className="mono mt-1.5 text-[11px] text-faint">
             {doubtPct}% doubt it · {total} votes
           </div>
         </div>

@@ -6,19 +6,19 @@ const MAP: Record<
 > = {
   active: {
     label: "ACTIVE",
-    className: "bg-accent/10 text-accent",
+    className: "bg-accent/10 text-accent ring-accent/20",
   },
   pending: {
     label: "AWAITING VERDICT",
-    className: "bg-pro/15 text-[#8a6a00]",
+    className: "bg-pro/10 text-pro ring-pro/20",
   },
   correct: {
     label: "CORRECT",
-    className: "bg-correct/12 text-correct",
+    className: "bg-correct/12 text-correct ring-correct/25",
   },
   wrong: {
     label: "WRONG",
-    className: "bg-wrong/12 text-wrong",
+    className: "bg-wrong/12 text-wrong ring-wrong/25",
   },
 };
 
@@ -42,7 +42,7 @@ export function StatusBadge({
   const { label, className: c } = MAP[key];
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold tracking-wide ${c} ${className}`}
+      className={`mono inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide ring-1 ring-inset ${c} ${className}`}
     >
       {key === "active" ? (
         <span className="live-dot h-1.5 w-1.5 rounded-full bg-accent" />

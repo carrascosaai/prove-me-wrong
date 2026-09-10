@@ -70,17 +70,17 @@ export default async function PredictionPage({
         <StatusBadge status={p.status} resolutionDate={p.resolution_date} />
         <Link
           href={`/feed?category=${encodeURIComponent(p.category)}`}
-          className="text-sm text-muted hover:text-ink"
+          className="mono text-[11px] uppercase tracking-wide text-faint hover:text-ink"
         >
           {p.category}
         </Link>
         {p.is_pro && !p.is_sponsored ? (
-          <span className="text-xs font-semibold text-[#8a6a00] border border-pro/50 rounded-full px-2 py-0.5">
+          <span className="mono text-[11px] font-semibold text-pro ring-1 ring-inset ring-pro/30 rounded-full px-2 py-0.5">
             PRO
           </span>
         ) : null}
         {p.is_sponsored ? (
-          <span className="text-xs font-semibold text-[#8a6a00] border border-pro/50 rounded-full px-2 py-0.5">
+          <span className="mono text-[11px] font-semibold text-pro ring-1 ring-inset ring-pro/30 rounded-full px-2 py-0.5">
             SPONSORED{p.sponsor_name ? ` · ${p.sponsor_name}` : ""}
           </span>
         ) : null}
@@ -88,7 +88,7 @@ export default async function PredictionPage({
 
       <h1
         className={`mt-4 display text-3xl sm:text-4xl leading-tight ${
-          p.is_pro ? "text-[#7a5c00]" : ""
+          p.is_pro ? "text-pro" : ""
         }`}
       >
         {p.prediction}
@@ -120,23 +120,32 @@ export default async function PredictionPage({
       </div>
 
       {/* Countdown / verdict */}
-      <div className="mt-8 rounded-xl border border-line p-5 sm:p-6">
+      <div
+        className={`mt-8 rounded-xl border p-5 sm:p-6 ${
+          p.status === "correct"
+            ? "border-correct/30 bg-correct/[0.06]"
+            : p.status === "wrong"
+              ? "border-wrong/30 bg-wrong/[0.06]"
+              : "border-line bg-surface/40"
+        }`}
+      >
         {p.status === "active" && !resolutionPassed ? (
           <>
-            <div className="text-xs uppercase tracking-widest text-muted mb-3">
-              Time until resolution
+            <div className="mono text-[11px] uppercase tracking-[0.2em] text-faint mb-4">
+              time until resolution
             </div>
             <Countdown target={p.resolution_date} />
           </>
         ) : p.status === "active" && resolutionPassed ? (
-          <div className="text-sm">
+          <div className="text-sm text-muted">
             The resolution date has passed. Waiting for{" "}
-            <span className="font-medium">@{p.username}</span> to mark the verdict.
+            <span className="font-medium text-ink">@{p.username}</span> to mark the
+            verdict.
           </div>
         ) : (
           <div className="flex items-center gap-3">
             <span
-              className={`display text-2xl ${
+              className={`display text-2xl sm:text-3xl ${
                 p.status === "correct" ? "text-correct" : "text-wrong"
               }`}
             >
@@ -157,8 +166,8 @@ export default async function PredictionPage({
 
       {/* Share */}
       <div className="mt-8">
-        <div className="text-xs uppercase tracking-widest text-muted mb-3">
-          Share this prediction
+        <div className="mono text-[11px] uppercase tracking-[0.2em] text-faint mb-3">
+          share this prediction
         </div>
         <ShareButtons url={shareUrl} text={shareText} />
         <div className="mt-3">
@@ -174,8 +183,8 @@ export default async function PredictionPage({
       </div>
 
       {!p.is_pro ? (
-        <div className="mt-8 rounded-xl border border-pro/40 bg-pro/[0.05] p-5">
-          <div className="font-semibold text-[#7a5c00]">
+        <div className="mt-8 rounded-xl border border-pro/30 bg-pro/[0.06] p-5">
+          <div className="font-semibold text-pro">
             Make it a PRO prediction — €2.99
           </div>
           <p className="text-sm text-muted mt-1">
@@ -184,7 +193,7 @@ export default async function PredictionPage({
           </p>
           <Link
             href={`/pro/${p.slug}`}
-            className="mt-3 inline-block rounded-md bg-[#7a5c00] text-white px-4 py-2 text-sm font-semibold hover:opacity-90"
+            className="mt-3 inline-block rounded-md bg-pro text-accent-ink px-4 py-2 text-sm font-semibold hover:bg-pro/90 transition-colors"
           >
             Upgrade this prediction
           </Link>
@@ -204,8 +213,10 @@ export default async function PredictionPage({
 function Meta({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="text-muted text-xs uppercase tracking-wide">{label}</div>
-      <div className="font-medium">{value}</div>
+      <div className="mono text-faint text-[10px] uppercase tracking-[0.15em]">
+        {label}
+      </div>
+      <div className="mono mt-0.5 font-medium text-sm">{value}</div>
     </div>
   );
 }

@@ -10,7 +10,7 @@ function Submit({ disabled }: { disabled: boolean }) {
     <button
       type="submit"
       disabled={pending || disabled}
-      className="w-full rounded-md bg-ink text-paper px-4 py-3 font-semibold hover:opacity-90 disabled:opacity-50"
+      className="w-full rounded-md bg-accent text-accent-ink px-4 py-3 font-semibold hover:bg-accent/90 disabled:opacity-50 transition-colors"
     >
       {pending ? "Saving…" : "Submit final verdict"}
     </button>
@@ -39,7 +39,7 @@ export function ResolveForm({ slug, token }: { slug: string; token: string }) {
                 ? v === "correct"
                   ? "border-correct bg-correct/10 text-correct"
                   : "border-wrong bg-wrong/10 text-wrong"
-                : "border-line hover:border-ink"
+                : "border-line hover:border-line-strong"
             }`}
           >
             <input

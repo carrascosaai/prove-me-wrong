@@ -40,7 +40,7 @@ export function CreatedBanner({
             <input
               readOnly
               value={manageUrl}
-              className="flex-1 rounded-md border border-line bg-paper px-3 py-2 text-xs"
+              className="mono flex-1 rounded-md border border-line bg-white/[0.03] px-3 py-2 text-xs"
               onFocus={(e) => e.currentTarget.select()}
             />
             <button
@@ -54,7 +54,7 @@ export function CreatedBanner({
                   // ignore
                 }
               }}
-              className="rounded-md bg-ink text-paper px-3 py-2 text-xs font-medium"
+              className="rounded-md bg-accent text-accent-ink px-3 py-2 text-xs font-semibold shrink-0"
             >
               {copiedManage ? "Copied ✓" : "Copy"}
             </button>

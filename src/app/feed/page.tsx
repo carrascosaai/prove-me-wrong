@@ -51,10 +51,10 @@ export default async function FeedPage({
           <Link
             key={s.key}
             href={qs({ sort: s.key })}
-            className={`rounded-full px-3 py-1.5 text-sm border transition-colors ${
+            className={`mono rounded-full px-3 py-1.5 text-xs border transition-colors ${
               sort === s.key
-                ? "border-ink bg-ink text-paper"
-                : "border-line hover:border-ink"
+                ? "border-accent bg-accent text-accent-ink font-semibold"
+                : "border-line text-muted hover:border-line-strong hover:text-ink"
             }`}
           >
             {s.label}
@@ -65,20 +65,22 @@ export default async function FeedPage({
       <div className="mt-3 flex flex-wrap gap-2">
         <Link
           href={qs({ category: null })}
-          className={`rounded-full px-3 py-1 text-xs border transition-colors ${
-            !category ? "border-ink" : "border-line text-muted hover:border-ink"
+          className={`mono rounded-full px-3 py-1 text-[11px] border transition-colors ${
+            !category
+              ? "border-line-strong text-ink"
+              : "border-line text-faint hover:border-line-strong hover:text-muted"
           }`}
         >
-          All categories
+          all
         </Link>
         {CATEGORIES.map((c) => (
           <Link
             key={c}
             href={qs({ category: c })}
-            className={`rounded-full px-3 py-1 text-xs border transition-colors ${
+            className={`mono rounded-full px-3 py-1 text-[11px] border transition-colors ${
               category === c
-                ? "border-ink"
-                : "border-line text-muted hover:border-ink"
+                ? "border-line-strong text-ink"
+                : "border-line text-faint hover:border-line-strong hover:text-muted"
             }`}
           >
             {c}

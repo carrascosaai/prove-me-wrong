@@ -27,7 +27,7 @@ function VoteButton({
           ? choice === "agree"
             ? "border-correct bg-correct/10 text-correct"
             : "border-wrong bg-wrong/10 text-wrong"
-          : "border-line hover:border-ink"
+          : "border-line bg-white/[0.02] hover:border-line-strong hover:bg-white/5"
       }`}
     >
       {children}
@@ -73,9 +73,9 @@ export function VoteWidget({
   const doubtPct = 100 - agreePct;
 
   return (
-    <div className="rounded-xl border border-line p-5">
-      <div className="text-xs uppercase tracking-widest text-muted mb-3">
-        Do you buy it?
+    <div className="rounded-xl border border-line bg-surface/40 p-5">
+      <div className="mono text-[11px] uppercase tracking-[0.2em] text-faint mb-3">
+        do you buy it?
       </div>
 
       <form action={action} className="flex gap-2">
@@ -93,11 +93,11 @@ export function VoteWidget({
       </form>
 
       <div className="mt-4">
-        <div className="flex h-2 rounded-full overflow-hidden bg-black/[0.06]">
-          <div className="bg-correct/70" style={{ width: `${agreePct}%` }} />
-          <div className="bg-wrong/70" style={{ width: `${doubtPct}%` }} />
+        <div className="flex h-1.5 rounded-full overflow-hidden bg-white/[0.08]">
+          <div className="bg-correct/80" style={{ width: `${agreePct}%` }} />
+          <div className="bg-wrong/80" style={{ width: `${doubtPct}%` }} />
         </div>
-        <div className="mt-1.5 flex justify-between text-xs text-muted">
+        <div className="mono mt-1.5 flex justify-between text-[11px] text-faint">
           <span>
             {agreePct}% believe it ({counts.agree})
           </span>
@@ -107,7 +107,9 @@ export function VoteWidget({
         </div>
       </div>
       {voted ? (
-        <p className="mt-2 text-xs text-muted">Thanks — your vote is counted.</p>
+        <p className="mono mt-2 text-[11px] text-muted">
+          thanks — your vote is counted.
+        </p>
       ) : null}
     </div>
   );

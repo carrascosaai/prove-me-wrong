@@ -59,25 +59,25 @@ async function RankingPreview({ type }: { type: (typeof RANKINGS)[number]["type"
   }
 
   return (
-    <div className="rounded-xl border border-line p-5">
+    <div className="rounded-xl border border-line bg-surface/40 p-5">
       <div className="flex items-baseline justify-between">
         <h2 className="display text-xl">{meta.title}</h2>
         <Link
           href={`/rankings/${type}`}
-          className="text-sm text-accent hover:underline"
+          className="mono text-xs text-accent hover:underline"
         >
-          Full list →
+          full list →
         </Link>
       </div>
-      <p className="text-xs text-muted mt-1">{meta.blurb}</p>
-      <ol className="mt-4 space-y-2">
+      <p className="mono text-[11px] text-muted mt-1.5">{meta.blurb}</p>
+      <ol className="mt-4 space-y-2.5">
         {rows.length === 0 ? (
-          <li className="text-sm text-muted">Not enough data yet.</li>
+          <li className="mono text-xs text-muted">not enough data yet.</li>
         ) : (
           rows.map((row, i) => (
             <li key={i} className="flex gap-3 text-sm">
-              <span className="text-muted tabular-nums w-4 shrink-0">
-                {i + 1}
+              <span className="mono text-accent tabular-nums w-5 shrink-0 text-xs pt-0.5">
+                {String(i + 1).padStart(2, "0")}
               </span>
               <span className="min-w-0">
                 {row.href ? (
@@ -87,7 +87,9 @@ async function RankingPreview({ type }: { type: (typeof RANKINGS)[number]["type"
                 ) : (
                   <span className="line-clamp-1">{row.label}</span>
                 )}
-                <span className="block text-xs text-muted">{row.sub}</span>
+                <span className="mono block text-[11px] text-faint mt-0.5">
+                  {row.sub}
+                </span>
               </span>
             </li>
           ))

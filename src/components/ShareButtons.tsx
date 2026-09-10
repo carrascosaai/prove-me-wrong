@@ -27,7 +27,7 @@ export function ShareButtons({
   }
 
   const btn =
-    "inline-flex items-center justify-center gap-2 rounded-md border border-line px-3 py-2 text-sm font-medium hover:bg-black/[0.04] transition-colors";
+    "inline-flex items-center justify-center gap-2 rounded-md border border-line px-3 py-2 text-sm font-medium hover:bg-white/5 hover:border-line-strong transition-colors";
 
   return (
     <div className="flex flex-wrap gap-2">

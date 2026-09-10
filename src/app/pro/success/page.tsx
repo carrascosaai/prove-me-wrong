@@ -43,7 +43,7 @@ export default async function SuccessPage({
       {slug ? (
         <Link
           href={`/p/${slug}`}
-          className="mt-6 inline-block rounded-md bg-ink text-paper px-5 py-3 font-semibold hover:opacity-90"
+          className="mt-6 inline-block rounded-md bg-accent text-accent-ink px-5 py-3 font-semibold hover:bg-accent/90"
         >
           View your prediction →
         </Link>

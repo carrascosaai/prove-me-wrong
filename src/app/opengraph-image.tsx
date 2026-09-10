@@ -36,7 +36,8 @@ export default async function OG() {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "flex-start",
-          background: "#ffffff",
+          background: "#0a0a0b",
+          color: "#fafafa",
           padding: 90,
           fontFamily: fonts.length ? "Inter" : "sans-serif",
         }}
@@ -50,9 +51,16 @@ export default async function OG() {
             lineHeight: 1,
           }}
         >
-          PROVE ME WRONG<span style={{ color: "#2540ff" }}>.</span>
+          PROVE ME WRONG<span style={{ color: "#ccff00" }}>.</span>
         </div>
-        <div style={{ display: "flex", marginTop: 24, fontSize: 40, color: "#6b7280" }}>
+        <div
+          style={{
+            display: "flex",
+            marginTop: 24,
+            fontSize: 40,
+            color: "#8b8b93",
+          }}
+        >
           Say it now. Prove it later.
         </div>
       </div>

@@ -31,14 +31,14 @@ export function SimulateForm({ slug }: { slug: string }) {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-md bg-black/[0.03] px-3 py-2 text-xs text-muted">
+      <div className="mono rounded-md bg-white/5 px-3 py-2 text-xs text-muted">
         Test card 4242 4242 4242 4242 · any future date · any CVC
       </div>
       <button
         type="button"
         onClick={complete}
         disabled={loading}
-        className="w-full rounded-md bg-ink text-paper px-4 py-3 font-semibold hover:opacity-90 disabled:opacity-50"
+        className="w-full rounded-md bg-pro text-accent-ink px-4 py-3 font-semibold hover:bg-pro/90 disabled:opacity-50 transition-colors"
       >
         {loading ? "Processing…" : "Complete simulated payment"}
       </button>

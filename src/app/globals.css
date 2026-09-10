@@ -3,27 +3,40 @@
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: var(--font-mono-family), ui-monospace, "SF Mono", "JetBrains Mono",
+    Menlo, Consolas, monospace;
 
-  --color-ink: #0a0a0a;
-  --color-paper: #ffffff;
-  --color-muted: #6b7280;
-  --color-line: #e7e7e7;
-  --color-accent: #2540ff;
-  --color-correct: #0f9d58;
-  --color-wrong: #e5322d;
-  --color-pro: #f5b400;
+  /* Dark, single-accent product palette */
+  --color-bg: #0a0a0b;
+  --color-paper: #0a0a0b; /* alias: page background */
+  --color-surface: #141416;
+  --color-surface-2: #1b1b1f;
+  --color-line: #272729;
+  --color-line-strong: #3a3a3f;
+  --color-ink: #fafafa; /* alias: primary text */
+  --color-muted: #8b8b93;
+  --color-faint: #5c5c63;
+
+  --color-accent: #ccff00;
+  --color-accent-ink: #0a0a0a;
+  --color-accent-dim: #9bc400;
+
+  --color-correct: #4ade80;
+  --color-wrong: #fb5d5d;
+  --color-pro: #fbbf24;
 }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 html {
   -webkit-text-size-adjust: 100%;
+  background: var(--color-bg);
 }
 
 body {
-  background: var(--color-paper);
+  background: var(--color-bg);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -33,13 +46,18 @@ body {
 /* Tight, confident display type for headlines */
 .display {
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
   line-height: 0.95;
 }
 
+.mono {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1;
+}
+
 ::selection {
-  background: var(--color-ink);
-  color: var(--color-paper);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
 }
 
 a {
@@ -54,15 +72,60 @@ a {
   scrollbar-width: none;
 }
 
+/* Live status dot */
 @keyframes pulse-dot {
   0%,
   100% {
     opacity: 1;
   }
   50% {
-    opacity: 0.35;
+    opacity: 0.3;
   }
 }
 .live-dot {
   animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+/* Hero glow */
+.hero-glow {
+  background:
+    radial-gradient(
+      60% 60% at 50% 0%,
+      color-mix(in srgb, var(--color-accent) 12%, transparent) 0%,
+      transparent 70%
+    );
+}
+
+/* Scrolling ticker */
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker 40s linear infinite;
+}
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none;
+  }
+}
+
+/* Fine dotted grid backdrop for hero */
+.dot-grid {
+  background-image: radial-gradient(
+    var(--color-line) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent 80%);
+  mask-image: linear-gradient(to bottom, black, transparent 80%);
 }

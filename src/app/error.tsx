@@ -24,13 +24,13 @@ export default function Error({
         <button
           type="button"
           onClick={reset}
-          className="rounded-md bg-ink text-paper px-5 py-3 font-semibold hover:opacity-90"
+          className="rounded-md bg-accent text-accent-ink px-5 py-3 font-semibold hover:bg-accent/90"
         >
           Retry
         </button>
         <Link
           href="/"
-          className="rounded-md border border-line px-5 py-3 font-medium hover:bg-black/[0.04]"
+          className="rounded-md border border-line-strong px-5 py-3 font-medium hover:bg-white/5"
         >
           Home
         </Link>

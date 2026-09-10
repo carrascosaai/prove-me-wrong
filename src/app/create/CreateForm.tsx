@@ -6,7 +6,7 @@ import { createPredictionAction, type CreateState } from "@/app/actions";
 import { CATEGORIES } from "@/lib/categories";
 
 const field =
-  "w-full rounded-md border border-line bg-paper px-3 py-2.5 text-sm outline-none focus:border-ink transition-colors";
+  "w-full rounded-md border border-line bg-white/[0.03] px-3 py-2.5 text-sm outline-none focus:border-accent focus:bg-white/[0.05] transition-colors placeholder:text-faint";
 const labelCls = "block text-sm font-medium mb-1.5";
 
 function SubmitButton() {
@@ -15,7 +15,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full rounded-md bg-ink text-paper px-4 py-3 font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+      className="w-full rounded-md bg-accent text-accent-ink px-4 py-3 font-semibold hover:bg-accent/90 transition-colors disabled:opacity-50"
     >
       {pending ? "Publishing…" : "Publish prediction"}
     </button>

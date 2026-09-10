@@ -7,7 +7,7 @@ import { formatDateShort } from "@/lib/format";
 import type { Comment } from "@/lib/types";
 
 const field =
-  "w-full rounded-md border border-line bg-paper px-3 py-2 text-sm outline-none focus:border-ink transition-colors";
+  "w-full rounded-md border border-line bg-white/[0.03] px-3 py-2 text-sm outline-none focus:border-accent focus:bg-white/[0.05] transition-colors placeholder:text-faint";
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -15,7 +15,7 @@ function Submit() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded-md bg-ink text-paper px-4 py-2 text-sm font-semibold hover:opacity-90 disabled:opacity-50"
+      className="rounded-md bg-accent text-accent-ink px-4 py-2 text-sm font-semibold hover:bg-accent/90 disabled:opacity-50 transition-colors"
     >
       {pending ? "Posting…" : "Post"}
     </button>

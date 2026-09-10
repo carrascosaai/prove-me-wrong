@@ -28,10 +28,10 @@ export default async function OG({
         : "ACTIVE PREDICTION";
   const statusColor =
     p?.status === "correct"
-      ? "#0f9d58"
+      ? "#4ade80"
       : p?.status === "wrong"
-        ? "#e5322d"
-        : "#2540ff";
+        ? "#fb5d5d"
+        : "#ccff00";
 
   const glyphs = `PROVE ME WRONG. ${statusText} ${text} ${footer}`;
   const [bold, regular] = await Promise.all([
@@ -62,7 +62,8 @@ export default async function OG({
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#ffffff",
+          background: "#0a0a0b",
+          color: "#fafafa",
           padding: 72,
           fontFamily: fonts.length ? "Inter" : "sans-serif",
         }}
@@ -75,7 +76,7 @@ export default async function OG({
           }}
         >
           <div style={{ display: "flex", fontSize: 30, fontWeight: 800, letterSpacing: -1 }}>
-            PROVE ME WRONG<span style={{ color: "#2540ff" }}>.</span>
+            PROVE ME WRONG<span style={{ color: "#ccff00" }}>.</span>
           </div>
           <div
             style={{
@@ -104,7 +105,7 @@ export default async function OG({
           {text}
         </div>
 
-        <div style={{ display: "flex", fontSize: 28, color: "#6b7280" }}>
+        <div style={{ display: "flex", fontSize: 28, color: "#8b8b93" }}>
           {footer}
         </div>
       </div>
