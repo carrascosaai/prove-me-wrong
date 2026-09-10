@@ -11,7 +11,6 @@ import { AdSlot } from "@/components/AdSlot";
 import { VoteWidget } from "./VoteWidget";
 import { CommentSection } from "./CommentSection";
 import { CreatedBanner } from "./CreatedBanner";
-import { ViewPing } from "./ViewPing";
 
 export const revalidate = 30;
 
@@ -58,9 +57,24 @@ export default async function PredictionPage({
   const shareText = `"${p.prediction}" — @${p.username} on ${formatDate(p.created_at)}. Prove them wrong:`;
   const resolutionPassed = new Date(p.resolution_date).getTime() < Date.now();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: p.prediction,
+    datePublished: p.created_at,
+    dateModified: p.resolved_at ?? p.created_at,
+    author: { "@type": "Person", name: `@${p.username}` },
+    publisher: { "@type": "Organization", name: "PROVE ME WRONG" },
+    articleSection: p.category,
+    url: shareUrl,
+  };
+
   return (
     <article className="mx-auto max-w-2xl px-4 py-10 sm:py-14">
-      <ViewPing slug={p.slug} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       {created === "1" ? (
         <CreatedBanner

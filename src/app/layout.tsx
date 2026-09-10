@@ -39,9 +39,21 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const orgLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "PROVE ME WRONG",
+    url: SITE_URL,
+    description: "Say it now. Prove it later.",
+  };
+
   return (
     <html lang="en" className={`${inter.variable} ${mono.variable}`}>
       <body className="min-h-screen flex flex-col antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }}
+        />
         <Nav />
         <main className="flex-1">{children}</main>
         <Footer />
